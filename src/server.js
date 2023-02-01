@@ -8,26 +8,30 @@ import { json } from 'body-parser'; // Parses incoming requests with JSON payloa
 
 import routes from './routes/routes';
 
-// Connecting to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URL, { useNewUrlParser: true })
-  .then(() => {
-    const app = express();
+const app = express();
+app.listen(process.env.PORT || 3000);
+app.get('/', (req, res) => res.send('API Server running!'));
 
-    app.use(cors());
-    app.use(helmet());
-    app.use(json());
+// // Connecting to MongoDB
+// mongoose
+//   .connect(process.env.MONGODB_URL, { useNewUrlParser: true })
+//   .then(() => {
+//     const app = express();
 
-    // ! Sicherheitslücke
-    // // Makes uploads accessible
-    // app.use(express.static('uploads'));
+//     app.use(cors());
+//     app.use(helmet());
+//     app.use(json());
 
-    // Forwards to Routes
-    app.use('/test', (req, res) => res.send('API Server running!'));
-    app.use('/api', routes);
+//     // ! Sicherheitslücke
+//     // // Makes uploads accessible
+//     // app.use(express.static('uploads'));
 
-    app.listen(process.env.SERVER_URL, () => {
-      console.log('\nServer running on http://localhost:' + process.env.SERVER_URL);
-    });
-  })
-  .catch((err) => console.log('\nMongoDB could not be connected - ' + err));
+//     // Forwards to Routes
+//     app.use('/test', (req, res) => res.send('API Server running!'));
+//     app.use('/api', routes);
+
+//     app.listen(process.env.SERVER_URL, () => {
+//       console.log('\nServer running on http://localhost:' + process.env.SERVER_URL);
+//     });
+//   })
+//   .catch((err) => console.log('\nMongoDB could not be connected - ' + err));
