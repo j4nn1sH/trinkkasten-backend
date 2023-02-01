@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'; // Password encryption
 import jwt from 'jsonwebtoken'; // Authorization via Token
 
 import { User, getCleanUser } from '../models/user';
+import path from 'path';
 
 const register = async (req, res) => {
   // TODO Input validation
