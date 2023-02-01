@@ -1,12 +1,12 @@
-import 'dotenv/config';
+// import 'dotenv/config';
 import express from 'express';
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 
-import cors from 'cors'; // Allows cross-origin requests
-import helmet from 'helmet'; // Configures HTTP-Headers for protection
-import { json } from 'body-parser'; // Parses incoming requests with JSON payloads
+// import cors from 'cors'; // Allows cross-origin requests
+// import helmet from 'helmet'; // Configures HTTP-Headers for protection
+// import { json } from 'body-parser'; // Parses incoming requests with JSON payloads
 
-import routes from './routes/routes';
+// import routes from './routes/routes';
 
 const app = express();
 app.listen(process.env.PORT || 3000);
