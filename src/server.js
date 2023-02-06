@@ -18,10 +18,6 @@ mongoose
     app.use(helmet());
     app.use(json());
 
-    // ! Sicherheitslücke
-    // // Makes uploads accessible
-    // app.use(express.static('uploads'));
-
     // Forwards to Routes
     app.use('/test', (req, res) => res.send('API Server running!'));
     app.use('/api', routes);
