@@ -13,8 +13,8 @@ const buyBeverages = async (req, res) => {
   // Update beverage quantities
   req.body.beverages.forEach(async b => {
     const beverage = await Beverage.findById(b._id);
-    beverage.quantity -= b.amount;
-    if(beverage.quantity < 0) return res.status(400).send('Not enough beverages in stock');
+    beverage.stock -= b.amount;
+    if(beverage.stock < 0) return res.status(400).send('Not enough beverages in stock');
     await beverage.save();
   });
 
@@ -32,7 +32,7 @@ const buyBeverages = async (req, res) => {
 }
 
 const getBeverages = async (req, res) => {
-  const beverages = await Beverage.find({quantity: {$gt: 0}});
+  const beverages = await Beverage.find({stock: {$gt: 0}});
   res.status(200).send(beverages);
 }
 
