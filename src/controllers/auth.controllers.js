@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken'; // Authorization via Token
 import { User } from '../models/user';
 
 const register = async (req, res) => {
-  console.log("register", req.body)
 
   // ? Hier oder in Input Validation?
   // const emailExists = await User.findOne({ email: req.body.email });
