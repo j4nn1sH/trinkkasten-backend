@@ -4,22 +4,13 @@ const schema = new mongoose.Schema({
   email: String,
   password: String,
   firstName: String,
-  lastName: String
+  lastName: String,
+  balance: {type: mongoose.Types.Decimal128, transform: (v) => parseFloat(v)},
+  type: String,
+  hide: {type: Boolean, default: false}
 });
 const User = mongoose.model('User', schema);
 
-// HELPERS
-const getCleanUser = (user) => {
-  return {
-    _id: user._id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    description: user.description
-  }
-};
-
 module.exports = {
-  User,
-  getCleanUser
+  User
 };

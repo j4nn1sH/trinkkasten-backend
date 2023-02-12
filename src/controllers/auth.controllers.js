@@ -19,7 +19,9 @@ const register = async (req, res) => {
     email: req.body.email,
     password: hashedPassword,
     firstName: req.body.firstName,
-    lastName: req.body.lastName
+    lastName: req.body.lastName,
+    type: "normal",
+    balance: 0
   });
 
   try {
@@ -45,12 +47,21 @@ const login = async (req, res) => {
 const me = async (req, res) => {
   const user = await User.findById(req.user._id)
   if (!user) return res.status(400).send('User not found')
-  res.status(200).send(user.toJSON()); // TODO don't send password
+  // Remove password from user
+  user.password = undefined;
+  res.status(200).send(user);
+};
+
+const getAllUsers = async (req, res) => {
+  const users = await User.find({hide: false}).select('-password');
+  res.status(200).send(users);
 };
 
 module.exports = {
   // auth.routes.js
   register,
   login,
-  me
+  me,
+  // shop.routes.js
+  getAllUsers
 };
