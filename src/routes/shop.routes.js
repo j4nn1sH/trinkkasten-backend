@@ -1,13 +1,14 @@
 import express from 'express';
 
-import shopControllers from '../controllers/shop.controllers';
-import authControllers from '../controllers/auth.controllers';
+import kitchenControllers from '../controllers/kitchen.controllers';
 
 const router = express.Router();
 
-router.get('/', shopControllers.getBeverages);
-router.post('/buy', shopControllers.buyBeverages);
-router.get('/users', authControllers.getAllUsers);
-router.post('/users/toggleHide', shopControllers.toggleHide);
+router.post('/buy', kitchenControllers.buy)
+router.get('/link', kitchenControllers.getLink)
+router.post('/beverages', kitchenControllers.addBeverage);
+router.get('/beverages', kitchenControllers.getBeverages);
+router.get('/beverages/all', kitchenControllers.getAllBeverages);
+router.put('/beverages/:id/toggleActive', kitchenControllers.toggleActive)
 
 module.exports = router;

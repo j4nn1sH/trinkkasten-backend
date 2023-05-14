@@ -6,10 +6,10 @@ const registerRules = () => {
   return [
     body("email")
       .isEmail()
-      .withMessage("invalid email address")
+      .withMessage("Invalid email address")
       .normalizeEmail(),
 
-    body("email").custom(async (value, { req }) => { // ? Should i test this here or in auth.controller?
+    body("email").custom(async (value, { req }) => {
       if (await User.findOne({ email: value })) {
         throw new Error('Email already in use');
       }
@@ -18,20 +18,20 @@ const registerRules = () => {
 
     body("password")
       .isLength({ min: 8, max: 15 })
-      .withMessage("your password should have min and max length between 8-15")
+      .withMessage("Your password should have min and max length between 8-15")
       .matches(/\d/)
-      .withMessage("your password should have at least one number")
+      .withMessage("Your password should have at least one number")
       .matches(/[!@#$%^&*(),.?":{}|<>]/)
-      .withMessage("your password should have at least one sepcial character"),
+      .withMessage("Your password should have at least one special character"),
 
     body("firstName")
       .isLength({ min: 3 })
-      .withMessage("the name must have minimum length of 3")
+      .withMessage("The name must have minimum length of 3")
       .trim(),
 
     body("lastName")
       .isLength({ min: 3 })
-      .withMessage("the name must have minimum length of 3")
+      .withMessage("The name must have minimum length of 3")
       .trim(),
   ]
 }
@@ -42,12 +42,10 @@ const validate = (req, res, next) => {
   if (errors.isEmpty()) {
     return next()
   }
-  const extractedErrors = []
-  errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }))
 
-  return res.status(422).json({
-    errors: extractedErrors,
-  })
+  return res.status(422).json(
+    errors.array().map((err) => err.msg),
+  )
 }
 
 module.exports = {
