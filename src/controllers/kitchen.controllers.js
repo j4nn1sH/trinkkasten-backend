@@ -6,7 +6,12 @@ import { History } from '../models/history'
 
 const addBeverage = async (req, res) => {
   const kitchen = await Kitchen.findOne();
-  kitchen.beverages.push(req.body);
+
+  const newBeverage = req.body;
+  newBeverage.active = true;
+  newBeverage._id = new Date().getTime().toString();
+
+  kitchen.beverages.push(newBeverage);
   await kitchen.save();
   res.status(200).send(kitchen.beverages);
 };
