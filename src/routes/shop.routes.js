@@ -2,16 +2,18 @@ import express from 'express';
 
 import kitchenControllers from '../controllers/kitchen.controllers';
 
+import checkAuth from '../middlewares/checkAuth.middleware';
+
 const router = express.Router();
 
-router.post('/buy', kitchenControllers.buy)
-router.get('/link', kitchenControllers.getLink)
-router.post('/beverages', kitchenControllers.addBeverage);
-router.get('/beverages', kitchenControllers.getBeverages);
-router.get('/beverages/all', kitchenControllers.getAllBeverages);
+router.post('', checkAuth, kitchenControllers.createKitchen);
+router.get('', kitchenControllers.getKitchenList);
 
-router.put('/beverages/:id', kitchenControllers.updateBeverage);
-router.delete('/beverages/:id', kitchenControllers.deleteBeverage);
-router.put('/beverages/:id/toggleActive', kitchenControllers.toggleActive)
+router.get('/:kitchen', kitchenControllers.getKitchen);
+router.put('/:kitchen', checkAuth, kitchenControllers.updateKitchen);
+router.post('/:kitchen', kitchenControllers.buy)
+router.post('/:kitchen/pay', kitchenControllers.pay)
+
+router.get('/:kitchen/isManager', checkAuth, kitchenControllers.getKitchen);
 
 module.exports = router;

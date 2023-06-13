@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
     ref: "User",
     required: true
   },
+  kitchen: {type: mongoose.Schema.Types.ObjectId, ref: "Kitchen", required: true},
   amount: {type: Number, required: true, transform: (v) => Math.round(parseFloat(v)*100) / 100},
   beverages: [{
     name: String,

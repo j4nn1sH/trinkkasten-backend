@@ -16,6 +16,11 @@ const register = async (req, res) => {
     lastName: req.body.lastName,
   });
 
+  var anyUser = await User.findOne();
+  if (!anyUser) {
+    user.manager = true;
+  }
+
   try {
     user = await user.save();
     res.status(200).send(user.toJSON());
@@ -33,7 +38,7 @@ const login = async (req, res) => {
 
   // ? Access + Refresh Token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 3600 });
-  res.status(200).send({ token: token, expiresIn: 3600 });
+  res.status(200).send({ token: token });
 };
 
 const me = async (req, res) => {
