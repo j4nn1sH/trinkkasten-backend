@@ -1,39 +1,32 @@
 import express from 'express';
 
 import {User} from '../models/user';
+import {Kitchen} from '../models/kitchen';
 
 const router = express.Router();
 
-const getUsers = async (req, res) => {
-  const users = await User.find();
-  res.status(200).send(users.filter(u => u.hide === false).map(u => u.toJSON()));
-}
+const getBalances = async (req, res) => {
+  const kitchens = await Kitchen.find();
 
-const getAllUsers = async (req, res) => {
-  const users = await User.find();
-  res.status(200).send(users.map(u => u.toJSON()));
-}
+  var balances = []
+  console.log(kitchens[0].users)
 
-const toogleHide = async (req, res) => {
-  var user = req.user
-  user.hide = !user.hide
-  user = await user.save()
-  res.status(200).send(user)
-}
+  kitchens.forEach(k => {
+    k.users.forEach(u => {
+      if(u.user.equals(req.user._id)) {
+        balances.push({
+          kitchen: k.name,
+          link: k.link,
+          balance: u.balance
+        })
+      }
+    })
+  })
 
-const addMoney = async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if(!user) return res.status(400).send('User not found');
-  user.balance = Number(user.balance) + Number(req.body.amount);
-  await user.save();
-
-  res.status(200).send(user.toJSON());
+  res.status(200).send(balances);
 }
 
 module.exports = {
   // user.routes.js
-  getUsers,
-  getAllUsers,
-  toogleHide,
-  addMoney
+  getBalances
 };

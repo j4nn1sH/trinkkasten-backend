@@ -2,53 +2,64 @@ import express from 'express';
 
 import { Kitchen } from '../models/kitchen';
 import { User } from '../models/user';
-import { History } from '../models/history'
+import { History } from '../models/history';
 
-const addBeverage = async (req, res) => {
-  const kitchen = await Kitchen.findOne();
+const createKitchen = async (req, res) => {
+  const kitchen = await Kitchen.findOne({name: req.body.name});
+  if (kitchen) return res.status(400).send("Kitchen already exists");
+  const newKitchen = new Kitchen({
+    name: req.body.name,
+    managers: [req.user._id],
+  });
+  await newKitchen.save();
 
-  const newBeverage = req.body;
-  newBeverage.active = true;
-  newBeverage._id = new Date().getTime().toString();
-
-  kitchen.beverages.push(newBeverage);
-  await kitchen.save();
-  res.status(200).send(newBeverage);
+  res.status(200).send(newKitchen);
 };
 
-const updateBeverage = async (req, res) => {
-  const kitchen = await Kitchen.findOne();
-  const beverage = kitchen.beverages.find((b) => b._id === req.params.id);
-  if (!beverage) res.status(400).send("Beverage not found!")
+const getKitchen = async (req, res) => {
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen}).populate('users.user');
+  if (!kitchen) return res.status(400).send("Kitchen not found!");
 
-  beverage.name = req.body.name;
-  beverage.price = req.body.price;
-  beverage.amount = req.body.amount;
+  res.status(200).send(kitchen);
+};
 
-  await kitchen.save()
+const updateKitchen = async (req, res) => {
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if (!kitchen) return res.status(400).send("Kitchen not found!");
 
-  res.status(200).send(beverage)
-}
+  if (!kitchen.managers.includes(req.user._id)) return res.status(400).send("You are not a manager of this kitchen!");
 
-const deleteBeverage = async (req, res) => {
-  const kitchen = await Kitchen.findOne();
-  const beverage = kitchen.beverages.find((b) => b._id === req.params.id);
-  if (!beverage) res.status(400).send("Beverage not found!")
+  // kitchen.name = req.body.name;
+  kitchen.link = req.body.kitchen.link;
+  kitchen.beverages = req.body.kitchen.beverages;
 
-  kitchen.beverages = kitchen.beverages.filter((b) => b._id !== req.params.id);
+  console.log(kitchen)
 
   await kitchen.save()
+  res.status(200).send(kitchen);
+};
 
-  res.status(200).send()
-}
+
+const getKitchenList = async (req, res) => {
+  const kitchens = await Kitchen.find();
+  res.status(200).send(kitchens.map(k => k.name));
+};
+
+const isManager = async (req, res) => {
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if (!kitchen) return res.status(400).send("Kitchen not found!");
+  res.status(200).send(kitchen.managers.includes(req.user._id));
+};
 
 const getBeverages = async (req, res) => {
-  const kitchen = await Kitchen.findOne();
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if (!kitchen) return res.status(400).send("Kitchen not found!")
   res.status(200).send(kitchen.beverages.filter(b => b.active));
 };
 
 const getAllBeverages = async (req, res) => {
-  const kitchen = await Kitchen.findOne();
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if (!kitchen) return res.status(400).send("Kitchen not found!")
   res.status(200).send(kitchen.beverages);
 };
 
@@ -56,18 +67,35 @@ const buy = async (req, res) => {
   const user = await User.findById(req.body.user_id);
   if(!user) return res.status(400).send('User not found');
 
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if (!kitchen) return res.status(400).send("Kitchen not found!")
+
+  if(kitchen.users.filter(u => u.user.equals(user._id)).length <= 0) {
+    kitchen.users.push({
+      user: req.body.user_id,
+      balance: 0,
+      hide: false
+    })
+  }
+
   const totalPrice = req.body.beverages.reduce((acc, b) => {
     acc += b.amount * b.price;
     return acc;
   }, 0);
 
-  user.balance -= totalPrice
-  await user.save();
+  kitchen.users.map(u => {
+    if(u.user.equals(req.body.user_id)) {
+      u.balance -= totalPrice
+    }
+    return u
+  })
+  await kitchen.save();
 
   var history = new History({
     date: Date.now(),
     user: user._id,
-    amount: totalPrice,
+    kitchen: kitchen._id,
+    amount: -totalPrice,
     beverages: req.body.beverages.map(b => {
       return {
         name: b.name,
@@ -78,34 +106,53 @@ const buy = async (req, res) => {
   });
   history = await history.save()
 
-  res.status(200).send("history")
+  res.status(200).send(history)
 }
 
-const toggleActive = async (req, res) => {
-  const kitchen = await Kitchen.findOne();
-  const beverage = kitchen.beverages.find((b) => b._id === req.params.id);
-  if (!beverage) res.status(400).send("Beverage not found!")
+const pay = async (req, res) => {
+  const user = await User.findById(req.body.user_id);
+  if(!user) return res.status(400).send('User not found');
 
-  beverage.active = !beverage.active
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if (!kitchen) return res.status(400).send("Kitchen not found!")
 
-  await kitchen.save()
+  if(kitchen.users.filter(u => u.user.equals(user._id)).length <= 0) {
+    kitchen.users.push({
+      user: req.body.user_id,
+      balance: 0,
+      hide: false
+    })
+  }
 
-  res.status(200).send(beverage)
-}
+  kitchen.users.map(u => {
+    if(u.user.equals(user._id)) {
+      u.balance += req.body.amount
+    }
+    return u
+  })
+  await kitchen.save();
 
-const getLink = async (req, res) => {
-  const kitchen = await Kitchen.findOne()
-  res.status(200).send({link: kitchen.link})
+  var history = new History({
+    date: Date.now(),
+    user: user._id,
+    kitchen: kitchen._id,
+    amount: req.body.amount,
+    beverages: []
+  });
+  history = await history.save()
+
+  res.status(200).send(history)
 }
 
 module.exports = {
   // shop.routes.js
-  addBeverage,
-  updateBeverage,
-  toggleActive,
-  deleteBeverage,
+  createKitchen,
+  getKitchen,
+  updateKitchen,
+  getKitchenList,
+  isManager,
   getBeverages,
   getAllBeverages,
   buy,
-  getLink
+  pay
 };
