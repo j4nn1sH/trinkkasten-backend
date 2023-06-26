@@ -9,7 +9,6 @@ const getBalances = async (req, res) => {
   const kitchens = await Kitchen.find();
 
   var balances = []
-  console.log(kitchens[0].users)
 
   kitchens.forEach(k => {
     k.users.forEach(u => {
