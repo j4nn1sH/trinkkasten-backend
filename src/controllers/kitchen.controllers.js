@@ -32,6 +32,8 @@ const updateKitchen = async (req, res) => {
   // kitchen.name = req.body.name;
   kitchen.link = req.body.kitchen.link;
   kitchen.beverages = req.body.kitchen.beverages;
+  kitchen.managers = req.body.kitchen.managers;
+  kitchen.users = req.body.kitchen.users;
 
   console.log(kitchen)
 

@@ -7,6 +7,7 @@ import checkAuth from '../middlewares/checkAuth.middleware';
 const router = express.Router();
 
 router.get('/balances', checkAuth, userController.getBalances);
-router.get('/history/:kitchen', checkAuth, historyController.getUserHistory)
+router.get('/:kitchen/history', checkAuth, historyController.getUserHistory)
+router.put('/:kitchen/toggleHide', checkAuth, userController.toggleHide)
 
 module.exports = router;

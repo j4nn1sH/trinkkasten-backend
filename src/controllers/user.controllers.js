@@ -16,7 +16,8 @@ const getBalances = async (req, res) => {
         balances.push({
           kitchen: k.name,
           link: k.link,
-          balance: u.balance
+          balance: u.balance,
+          hide: u.hide
         })
       }
     })
@@ -25,7 +26,23 @@ const getBalances = async (req, res) => {
   res.status(200).send(balances);
 }
 
+const toggleHide = async (req, res) => {
+  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
+  if(!kitchen) return res.status(400).send("Kitchen not found!");
+
+  kitchen.users.forEach(u => {
+    if(u.user.equals(req.user._id)) {
+      u.hide = !u.hide;
+    }
+  });
+
+  await kitchen.save();
+
+  res.status(200).send();
+}
+
 module.exports = {
   // user.routes.js
-  getBalances
+  getBalances,
+  toggleHide
 };

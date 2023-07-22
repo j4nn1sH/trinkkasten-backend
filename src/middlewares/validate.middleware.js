@@ -18,11 +18,7 @@ const registerRules = () => {
 
     body("password")
       .isLength({ min: 8, max: 15 })
-      .withMessage("Your password should have min and max length between 8-15")
-      .matches(/\d/)
-      .withMessage("Your password should have at least one number")
-      .matches(/[!@#$%^&*(),.?":{}|<>]/)
-      .withMessage("Your password should have at least one special character"),
+      .withMessage("Your password should have min and max length between 8-15"),
 
     body("firstName")
       .isLength({ min: 3 })
