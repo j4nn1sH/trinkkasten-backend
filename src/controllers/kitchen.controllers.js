@@ -35,8 +35,6 @@ const updateKitchen = async (req, res) => {
   kitchen.managers = req.body.kitchen.managers;
   kitchen.users = req.body.kitchen.users;
 
-  console.log(kitchen)
-
   await kitchen.save()
   res.status(200).send(kitchen);
 };
