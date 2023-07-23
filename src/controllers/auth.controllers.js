@@ -37,7 +37,8 @@ const login = async (req, res) => {
   if (!validPassword) return res.status(400).json(['Invalid email or password']);
 
   // ? Access + Refresh Token
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 3600 });
+  // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 3600 });
+  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
   res.status(200).send({ token: token });
 };
 
