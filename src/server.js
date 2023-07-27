@@ -22,6 +22,8 @@ mongoose
     app.use('/test', (req, res) => res.send('API Server running!'));
     app.use('/api', routes);
 
+    app.use('/assets', express.static('./assets'))
+
     app.listen(process.env.SERVER_URL, () => {
       console.log('\nServer running on http://localhost:' + process.env.SERVER_URL);
     });
