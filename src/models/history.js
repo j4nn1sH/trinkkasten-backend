@@ -7,13 +7,14 @@ const schema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  kitchen: {type: mongoose.Schema.Types.ObjectId, ref: "Kitchen", required: true},
+  shop: {type: mongoose.Schema.Types.ObjectId, ref: "Shop", required: true},
   amount: {type: Number, required: true, transform: (v) => Math.round(parseFloat(v)*100) / 100},
-  beverages: [{
+  items: [{
     name: String,
     price: Number,
     count: Number
   }],
+  description: [String]
 });
 const History = mongoose.model('History', schema);
 

@@ -5,12 +5,15 @@ const schema = new mongoose.Schema({
   password: {type: String, required: true},
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
+},
+{
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.__v;
+      delete ret.password;
+    }
+  }
 });
-schema.methods.toJSON = function() {
-  var obj = this.toObject();
-  delete obj.password;
-  return obj;
-}
 
 const User = mongoose.model('User', schema);
 

@@ -23,7 +23,7 @@ const register = async (req, res) => {
 
   try {
     user = await user.save();
-    res.status(200).send(user.toJSON());
+    res.status(200).send(user);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -38,12 +38,12 @@ const login = async (req, res) => {
 
   // ? Access + Refresh Token
   // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: 3600 });
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+  const token = jwt.sign({ uuid: user._id }, process.env.TOKEN_SECRET);
   res.status(200).send({ token: token });
 };
 
 const me = async (req, res) => {
-  res.status(200).send(req.user.toJSON());
+  res.status(200).send(req.user);
 };
 
 module.exports = {

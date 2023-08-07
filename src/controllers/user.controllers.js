@@ -1,48 +1,49 @@
 import express from 'express';
 
-import {User} from '../models/user';
-import {Kitchen} from '../models/kitchen';
+import { User } from '../models/user';
+import { Shop } from '../models/shop';
 
 const router = express.Router();
 
-const getBalances = async (req, res) => {
-  const kitchens = await Kitchen.find();
+const getBalanceList = async (req, res) => {
+  const shops = await Shop.find();
 
-  var balances = []
+  var balanceList = []
 
-  kitchens.forEach(k => {
-    k.users.forEach(u => {
+  shops.forEach(s => {
+    s.users.forEach(u => {
       if(u.user.equals(req.user._id)) {
-        balances.push({
-          kitchen: k.name,
-          link: k.link,
+        balanceList.push({
+          shop_id: s._id,
+          name: s.name,
           balance: u.balance,
+          link: s.link,
           hide: u.hide
         })
       }
     })
   })
 
-  res.status(200).send(balances);
+  res.status(200).send(balanceList);
 }
 
 const toggleHide = async (req, res) => {
-  const kitchen = await Kitchen.findOne({name: req.params.kitchen});
-  if(!kitchen) return res.status(400).send("Kitchen not found!");
+  const shop = await Shop.findById(req.params.shop_id);
+  if(!shop) return res.status(400).send("Shop not found!");
 
-  kitchen.users.forEach(u => {
+  shop.users.forEach(u => {
     if(u.user.equals(req.user._id)) {
       u.hide = !u.hide;
     }
   });
 
-  await kitchen.save();
+  await shop.save();
 
   res.status(200).send();
 }
 
 module.exports = {
   // user.routes.js
-  getBalances,
+  getBalanceList,
   toggleHide
 };

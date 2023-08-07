@@ -16,10 +16,6 @@ const registerRules = () => {
       return true;
     }),
 
-    body("password")
-      .isLength({ min: 8, max: 15 })
-      .withMessage("Your password should have min and max length between 8-15"),
-
     body("firstName")
       .isLength({ min: 3 })
       .withMessage("The name must have minimum length of 3")
