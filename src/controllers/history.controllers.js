@@ -1,19 +1,19 @@
 import express from 'express';
 
-import { Kitchen } from '../models/kitchen';
+import { Shop } from '../models/shop';
 import { User } from '../models/user';
 import { History } from '../models/history'
 
-const getUserHistory = async (req, res) => {
-  const kitchen = await Kitchen.findOne({name: req.params.kitchen})
-  if(!kitchen) return res.status(400).send("Kitchen not found!")
+const getHistory = async (req, res) => {
+  const shop = await Shop.findById(req.params.shop_id)
+  if(!shop) return res.status(400).send("Kitchen not found!")
 
 
-  const history = await History.find({user: req.user._id, kitchen: kitchen._id}).sort({date: 'desc'}).limit(10)
+  const history = await History.find({user: req.user._id, shop: shop._id}).sort({date: 'desc'}).limit(10)
   res.status(200).send(history);
 }
 
 module.exports = {
   // shop.routes.js
-  getUserHistory
+  getHistory
 };
